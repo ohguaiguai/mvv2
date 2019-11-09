@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+<body>
+	<div id="root">
+		<div>
+			<div>
+				{{name}} {{message}} 
+			</div>
+		</div>
+	</div>
+	<script>
+		let rdelima = /\{\{(.+?)\}\}/g;
+		function compiler(template, data) {
+			let childNodes = template.childNodes;
+			for (let i = 0; i < childNodes.length; i++) {
+				let type = childNodes[i].nodeType;
+				if (type === 3) {
+					let txt = childNodes[i].nodeValue;
+					// 使用正则匹配一次，函数就会被调用一次
+					// 第0个参数表示匹配到的内容，第n个参数表示正则中的第n组 
+					txt = txt.replace(rdelima, function(_, g) {
+						let key = g.trim();
+						let value = data[key];
+						return value;
+					});
+					childNodes[i].nodeValue = txt;
+				} else if (type === 1) {
+					compiler(childNodes[i], data);
+				}
+			}
+		}
+		function JGVue(options) {
+			// 习惯： 内部的数据使用下划线开头，只读数据使用$开头
+			this._data = options.data;
+			this._el = options.el;
+
+			//准备工作
+			this.$el = this._templateDOM = document.querySelector(this._el);
+			this._parent = this._templateDOM.parentNode;
+
+			// 渲染工作
+			this.render();
+		}
+
+		// 将模板结合数据得到HTML添加到页面中
+		JGVue.prototype.render = function() {
+			this.compiler();
+		}
+		// 编译 将模板与数据结合得到真正的dom元素
+		JGVue.prototype.compiler = function() {
+			let realHTMLDOM = this._templateDOM.cloneNode(true);// 得到一个准DOM
+			compiler(realHTMLDOM, this._data);
+			this.update(realHTMLDOM);
+		}
+		// 更新 将dom元素放到页面中
+		JGVue.prototype.update = function(real) {
+			this._parent.replaceChild(real, document.querySelector('#root'));
+		}
+
+		let app = new JGVue({
+			el: '#root',
+			data: {
+				name: 'jim',
+				message: 'info'
+			}
+		})
+	</script>
+</body>
+</html>
