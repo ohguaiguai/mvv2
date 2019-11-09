@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+<body>
+	<div id="root">
+		<div>
+			<div>
+				{{name}} {{message}} 
+			</div>
+		</div>
+	</div>
+	<script>
+		let tempNode = document.querySelector('#root');
+		let data = {
+			name: 'aaa',
+			message: 'bbb'
+		};
+		let rdelima = /\{\{(.+?)\}\}/g;
+		/* let txt = '12{{123}}rrr{{456}}';
+		txt.replace(rdelima, function(_, g) {
+			console.log(g.trim());
+		}); */
+		function compiler(template, data) {
+			let childNodes = template.childNodes;
+			for (let i = 0; i < childNodes.length; i++) {
+				let type = childNodes[i].nodeType;
+				if (type === 3) {
+					let txt = childNodes[i].nodeValue;
+					// 使用正则匹配一次，函数就会被调用一次
+					// 第0个参数表示匹配到的内容，第n个参数表示正则中的第n组 
+					txt = txt.replace(rdelima, function(_, g) {
+						let key = g.trim();
+						let value = data[key];
+						return value;
+					});
+					console.log(txt);
+					childNodes[i].nodeValue = txt;
+				} else if (type === 1) {
+					compiler(childNodes[i], data);
+				}
+			}
+		}
+		/* console.log(tempNode); // 此时没有生成新的template, 所以这里看到的是直接在页面中更新的数据，dom是引用类型, 这样模板就没了
+		compiler(tempNode, data);
+		console.log(tempNode); */
+
+		// 这样就把模板保存下来了
+		let generateNode = tempNode.cloneNode(true);
+		console.log(tempNode); 
+		compiler(generateNode, data);
+		console.log(generateNode);
+		tempNode.parentNode.replaceChild(generateNode, tempNode);
+		
+	</script>
+</body>
+</html>
