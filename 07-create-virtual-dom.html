@@ -67,7 +67,7 @@
 
 		let root = document.querySelector('#root');
 		let vroot = getVNode(root);
-		console.log(vroot);
+		// console.log(vroot);
 
 		/** 
 		 * 将vnode 转换为真正的dom
@@ -96,6 +96,11 @@
 				return _node;
 			}
 		}
+
+		// 在真正的vue中也是使用递归 + 栈 数据类型
+		let dom2 = parseVNode(vroot);
+		// 要验证，只要将转换后的dom打印出来，看看和原来的dom是否一致
+		console.log(dom2);
 	</script>
 </body>
 

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+<body>
+	<div id="root">
+		<div class="hello1">{{name}}</div>
+		<div>{{age}}</div>
+		<div>{{gender}}</div>
+		<ul>
+			<li>1</li>
+			<li>1</li>
+			<li>3</li>
+		</ul>
+	</div>
+	<script>
+		class VNode {
+			constructor(tag, data, value, type) {
+				this.tag = tag && tag.toLowerCase();
+				this.data = data;
+				this.value = value;
+				this.type = type;
+				this.children = [];
+			}
+			appendChild(vnode) {
+				this.children.push(vnode);
+			}
+		}
+		function getVNode(node) {
+			let nodeType = node.nodeType;
+			let _vnode = null;
+			// 元素
+			if (nodeType === 1) {
+				let nodeName = node.tagName;
+				let attrs = node.attributes;
+				let _attrObj = {};
+				for (let i = 0; i < attrs.length; i++) { // attrs[i]是属性节点 nodeType = 2
+					_attrObj[attrs[i].nodeName] = attrs[i].nodeValue;
+				}
+				_vnode = new VNode(nodeName, _attrObj, undefined, nodeType);
+				// 考虑node的子元素
+				let childNodes = node.childNodes;
+				for (let i = 0; i < childNodes.length; i++) {
+					_vnode.appendChild(getVNode(childNodes[i]));// 递归
+				}
+
+			} else if (nodeType === 3) {
+				_vnode = new VNode(undefined, undefined, node.nodeValue, nodeType);
+			}
+			return _vnode;
+		}
+		let rkuohao = /\{\{(.+?)\}\}/g;
+
+		function getValueVByPath(obj, path) {
+			let paths = path.split('.');// [xxx, yyy, zzz]
+
+			let res = obj;
+			let prop;
+			while(prop = paths.shift()) {
+				res = res[prop];
+			}
+			return res;
+		}
+		
+		// 将带有坑的vnode与数据data结合得到填充数据的vnode
+		// 模拟 AST -> VNode
+		function combine(vnode, data) {
+			let _tag = vnode.tag;
+			let _data = vnode.data;
+			let _value = vnode.value;
+			let _type = vnode.type;
+			let _children = vnode.children;
+
+			let _vnode = null;
+			if (_type === 3) {
+				// 对文本处理
+				_value = _value.replace(rkuohao, function(_, g) {
+					return getValueVByPath(data, g.trim());
+				});
+				_vnode = new VNode(_tag, _data, _value, _type);
+			} else if (_type === 1) {
+				_vnode = new VNode(_tag, _data, _value, _type);
+				_children.forEach( _subvnode => _vnode.appendChild(combine(_subvnode, data)));
+			}
+			return _vnode;
+		}
+
+		function JGVue(options) {
+			this._data = options.data;
+			this._template = document.querySelector(options.el);// vue中是字符串，这里是dom
+
+			this.mount();
+		}
+		JGVue.prototype.mount = function() {
+			// 需要提供一个render方法： 生成虚拟dom
+			this.render = this.createRenderFn();
+
+			this.mountComponent();
+		}
+		JGVue.prototype.mountComponent = function() {
+			
+			// 执行mountComponent() 函数
+			let mount = () => {
+				this.update(this.render());
+			}
+
+			mount.call(this); // 本质上应该交给watcher
+		}
+		/**
+		 * 在真正的Vue中使用了 二次提交的 设计结构
+		 * 1. 在页面中的dom和虚拟dom是一一对应的关系
+		 * 2. 当数据变化时，先由AST和数据生成新的vnode（第一次），新的vnode和旧的vnode做diff比较（第二次），相同的不管，不同的更新
+		*/
+		// 生成render函数，目的是缓存抽象语法树 (这里用虚拟dom来模拟)
+		JGVue.prototype.createRenderFn = function() {
+			let ast = getVNode(this._template);// 旧的vnode
+			console.log(ast);
+			// Vue: 将AST + data => VNode
+			// 简化： 带坑的 vnode + data => 含有数据的VNode
+			return function render() {
+				// 将带坑的vnode转换为带数据的vnode
+				let _tmp = combine(ast, this._data);
+				console.log(_tmp);
+				return _tmp;
+			}
+		}
+		// 将虚拟dom渲染到页面中： diff算法
+		JGVue.prototype.update = function() {
+			// 简化， 直接生成HTML DOM replaceChild 到页面中
+
+		}
+		let app = new JGVue({
+			el: '#root',
+			data: {
+				name: '张三',
+				age: 19
+			}
+		})
+		</script>
+</body>
+</html>
