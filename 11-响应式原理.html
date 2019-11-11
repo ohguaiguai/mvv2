@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let o = {};
+
+        let _age;
+        Object.defineProperty(o, 'age', {
+            configurable: true,
+            // writable: true, 写了get和set就不能写writable
+            enumerable: true,
+            get() {
+                return _age;
+            },
+            set(newVal) {
+                _age = newVal;
+            }
+        });
+        // 如果同时使用get和set需要一个中间变量存储真正的数据
+
+        // 问题：_age被暴露在全局作用域下了， 怎么办？
+        // 在Vue中使用defineReactive(target, key, value, enumerable)
+        </script>
+</body>
+</html>
