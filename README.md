@@ -122,7 +122,7 @@ function defineReactive(target, key, value, enumerable) {
 
 要做什么？
 1. 改变数组的数据时发出通知
-	- Vue2中的缺陷，数组发生变化，设置length没法通知(Vue3.0中使用Proxy 来解决)
+	- Vue2中的缺陷，数组发生变化，设置length没法通知(Vue3.0中使用Proxy 来解决)，因为数组不是响应式的，所以直接给数组赋值没法通知
 2. 新添加的元素应该变成响应式的
 
 技巧：如果一个函数已经定义了但是需要扩展其功能。我们一般的处理办法：
@@ -135,4 +135,25 @@ function defineReactive(target, key, value, enumerable) {
 - 直接修改prototype **不行**
 - 修改要进行响应式化的数组的原型(__proto__)
 
-已经将对象改成响应式了，但是如果直接给对象赋值另一个对象，那么久不是响应式了，怎么办？
+已经将对象改成响应式了，但是如果直接给对象赋值另一个对象，那么就不是响应式了，怎么办？
+```js
+value = reactify(newVal);// set 中对新值进行响应化处理
+```
+
+# 发布订阅模式
+
+- 代理方法(app.name app._data.name)
+- 事件模型(借助于node的event模块)
+- Vue中Observer 与 Watcher 和 Dep
+
+代理方法，就是要将app._data 中的成员给映射到app上
+由于需要在更新数据的时候更新页面的内容，所以app._data与app访问的成员应该是同一个成员
+由于app._data已经是响应式的对象了，所以只需要让app访问的成员去访问app._data的对应成员就可以了
+
+如： app.name 转换为 app._data.name
+
+Vue中引入了一个函数proxy(target, src, prop), 将target的操作映射到src.prop上，这里是因为当时没有`Proxy`语法
+
+之前处理的reactify方法已经不适用了，需要一个新的方法来处理
+
+提供一个Observer的方法， 在这个方法中对属性进行处理，可以将这个方法封装到initData方法中
