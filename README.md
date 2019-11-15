@@ -1,4 +1,5 @@
 # 函数柯里化
+
 - [函数式编程](https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/)
   
 概念:
@@ -11,10 +12,11 @@
 为了提升性能，使用柯里化可以缓存一部分行为。
 
 例子：
+
 1. 判断元素
 2. 虚拟dom的render方法
 
-1. 判断元素
+3. 判断元素
 
 vue本质上是使用HTML的字符串作为模板的，将字符串的模板转换为AST， 再转换为VNode
 
@@ -33,18 +35,20 @@ vue本质上是使用HTML的字符串作为模板的，将字符串的模板转�
 在Vue源码中将所有可用的HTML标签已经存起来了
 
 假设只考虑几个标签：
+
 ```js
 let tag = 'div, p, a, img, ul, li'.split(',');
 ```
 
 需要一个函数，判断一个标签是否为内置的标签
+
 ```js
 function isHMTLTag(tagName) {
-	tagName = tagName.toLowerCase();
-	for (...) {
-		if (tagName === tags[i]) return true;
-	}
-	return false;
+    tagName = tagName.toLowerCase();
+    for (...) {
+        if (tagName === tags[i]) return true;
+    }
+    return false;
 }
 ```
 
