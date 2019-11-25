@@ -140,7 +140,7 @@ function defineReactive(target, key, value, enumerable) {
 value = reactify(newVal);// set 中对新值进行响应化处理
 ```
 
-# 发布订阅模式
+
 
 - 代理方法(app.name app._data.name)
 - 事件模型(借助于node的event模块)
@@ -157,3 +157,9 @@ Vue中引入了一个函数proxy(target, src, prop), 将target的操作映射到
 之前处理的reactify方法已经不适用了，需要一个新的方法来处理
 
 提供一个Observer的方法， 在这个方法中对属性进行处理，可以将这个方法封装到initData方法中
+
+# 发布订阅模式
+
+目标：解耦，让各个模块之间没有紧密的联系
+
+在Vue中，整个的更新是按照组件为单位进行**判断**，以节点为单位进行更新。
