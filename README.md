@@ -180,7 +180,7 @@ vue中的发布订阅模式模型
 
 全局watcher中的watcher执行之后就移除了
 
-第一次执行全局watcher中的watcher是什么时候？
+第一次执行全局watcher中的watcher是什么时候？ getter中
 
 - 如果页面中只有一个组件（vue实例）， 不会有性能损失
 - 如果有多个组件，第一次会把所有组件对应的watcher存入到全局watcher中
