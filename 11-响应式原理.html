@@ -8,7 +8,9 @@
 </head>
 <body>
     <script>
-        let o = {};
+        let o = {
+            
+        };
 
         let _age;
         Object.defineProperty(o, 'age', {
@@ -16,6 +18,7 @@
             // writable: true, 写了get和set就不能写writable
             enumerable: true,
             get() {
+                console.log('读取')
                 return _age;
             },
             set(newVal) {

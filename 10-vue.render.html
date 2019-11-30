@@ -9,17 +9,29 @@
 <body>
     <div id="root">
         <p>{{name}}</p>
+        <div v-for="item in list">
+            {{item}}
+        </div>
+        <div v-for="item in list2">
+            {{item.name}}
+        </div>
+        {{JSON.stringify(list2)}}
     </div>
     <script src="./node_modules/vue/dist/vue.js"></script>
     <script>
         let app = new Vue({
             el: '#root',
             data: {
-                name: '张三'
+                name: '张三',
+                list: [1, 3, 4],
+                list2: [{
+                    id: 1,
+                    name: 'saaa'
+                }]
             },
-            render: function(createElement) {
-                return createElement('h1');
-            }
+            // render: function(createElement) {
+            //     return createElement('h1');
+            // }
         })
         </script>
 </body>

@@ -185,3 +185,58 @@ vue中的发布订阅模式模型
 - 如果页面中只有一个组件（vue实例）， 不会有性能损失
 - 如果有多个组件，第一次会把所有组件对应的watcher存入到全局watcher中
   - 如果只修改了某一个组件的数据，只会对该组件进行diff算法，只重新生成该组件的抽象语法树，也就只会访问该组件的watcher，全局watcher中存储的只有该组件对应的watcher
+
+
+# 改写 observer 函数
+
+缺陷：
+- 无法处理数组
+- 响应式无法在中间继承watcher处理
+- reactify 需要和实例紧紧绑定在一起
+
+# 引入watcher
+
+问题：
+- 模型
+- 关于this的问题
+  
+实现：
+
+分成两步
+1. 修改后刷新即响应式
+2. 依赖收集
+
+在vue中Watcher
+- get() 用来进行 计算 或 执行处理函数
+- update() 公共的外部方法， 会触发内部的 run 方法
+- run() 用来判断内部是使用异步运行还是同步运行等， 最终会调用内部的get方法
+- cleanupDep() 清除队列
+
+watcher 实例有一个属性 vm， 就是当前的 vue实例
+
+# 引入Dep
+
+# Watcher & Dep
+
+之前将渲染Watcher 放在全局作用域中，这么处理是有问题的
+- vue中包含很多的组件， 各个组件都是自治的
+  - 那么watcher就可能有多个
+  - 每一个watcher用于描述一个渲染行为 或 计算行为
+    - 子组件发生数据的更新，页面需要重新渲染（vue中使用 局部 渲染）
+    - 例如vue中推荐使用 计算属性 代替复杂的插值表达式
+      - 计算属性是会伴随其使用的属性的变化而变化的
+- 依赖收集和派发更新
+  - 在访问的时候收集， 修改的时候更新，收集到什么就更新什么
+
+所谓的依赖收集实际上就是告诉当前的watcher 什么属性被访问了
+
+如何将属性和 当前watcher 关联起来?
+- 在全局准备一个 targetStack 
+- 在 Watcher 调用get方法的时候，将每个Watcher 放到全局， 在get执行之后，把这个全局的Watcher移除，提供：pushTarget 和 popTarget
+- 在每一个属性中都有一个dep
+
+dep有一个方法 notify() ，内部就是将dep.subs 取出来，依次调用update方法， subs存储的就是 属性的渲染watcher
+
+问题：当设置 app.name = '李四'触发了dep.notify(),执行渲染方法，此时又会触发name的getter从而又添加了对应的Watcher 
+
+# Observer对象
