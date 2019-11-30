@@ -237,6 +237,6 @@ watcher 实例有一个属性 vm， 就是当前的 vue实例
 
 dep有一个方法 notify() ，内部就是将dep.subs 取出来，依次调用update方法， subs存储的就是 属性的渲染watcher
 
-问题：当设置 app.name = '李四'触发了dep.notify(),执行渲染方法，此时又会触发name的getter从而又添加了对应的Watcher 
+问题：当设置 app.name = '李四'触发了dep.notify() -> watcher.update() -> watcher.run() -> watcher.get(): Dep.target != null -> dep.depend(), 这样dep.subs就会越来越多
 
 # Observer对象

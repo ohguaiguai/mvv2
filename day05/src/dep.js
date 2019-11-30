@@ -25,7 +25,6 @@ class Dep {
         if (Dep.target) {
             this.addSub(Dep.target);
             Dep.target.addDep(this);
-            console.log(Dep.target)
         }
     }
     /** 触发与之关联的 watcher 的 update 方法, 起到更新的作用 */
