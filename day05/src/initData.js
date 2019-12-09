@@ -63,7 +63,7 @@ function observe (obj, vm) {
         obj.__proto__ = array_methods; 
         for (let i = 0; i < obj.length; i++) {
             // 递归处理数组的每一个元素
-            observe(obj[i]);
+            observe(obj[i], vm);
         }
     } else {
         let keys = Object.keys(obj);

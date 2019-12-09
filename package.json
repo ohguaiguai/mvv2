@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "rollup rollup/src/index.js --file dist/jgvue.js --format umd --name jgvue --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "rollup": "^1.27.9",
     "vue": "^2.6.10"
   }
 }
