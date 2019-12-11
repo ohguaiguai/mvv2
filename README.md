@@ -238,3 +238,39 @@ watcher 实例有一个属性 vm， 就是当前的 vue实例
 dep有一个方法 notify() ，内部就是将dep.subs 取出来，依次调用update方法， subs存储的就是 属性的渲染watcher
 
 问题：当设置 app.name = '李四'触发了dep.notify() -> watcher.update() -> watcher.run() -> watcher.get(): Dep.target != null -> dep.depend(), 这样dep.subs就会越来越多
+
+# vue 源代码
+1. 各个文件夹的作用
+2. vue的初始化流程
+
+## 1. 各个文件夹的作用
+1. compiler 编译用的
+   -  vue使用 **字符串**作为模板
+   -  在编译文件夹中存放着对模板字符串的解析的算法， 抽象语法树， 优化等
+2. core 核心， vue的构造函数、生命周期等
+3. platform 平台
+   - 针对运行的环境(设备) , 有不同的实现
+   - 也是vue的入口
+4. server 服务端， 主要是将vue用在服务端的处理
+5. sfc 单文件组件
+6. shared 公共工具， 方法
+   
+observer
+- array.js 
+- dep.js
+- index.js observer的工厂函数
+- scheduler.js vue中的任务调度的工具， watcher 执行的核心
+- traverse.js 递归遍历响应式数据，目的是触发依赖收集
+- watcher.js 
+
+数组去重
+```js
+let _set = {}
+let _newArr = []
+arr.forEach( v => _set[v] || (_set[v] = true, _newArr.push(v)))
+//Object.keys(_set);// 获得去重后的数组
+```
+不适用JSON.stringify实现将对象转换为JSON的格式的字符串
+```js
+
+```
